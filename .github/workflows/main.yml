@@ -1,0 +1,35 @@
+name: Test Redex
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+env:
+  DIR: ${{ github.workspace }}
+jobs:
+  RedexApk:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Redex
+        run: |
+          curl -L -s -o redexbin https://github.com/TGH131/build-redex/releases/download/latest/redex-all
+          sudo chmod +x redexbin
+          sudo apt-get install -y libboost-all-dev libjsoncpp-dev
+
+      - name: Get APK
+        run: curl -L -s -o redex.apk https://github.com/wikimedia/apps-android-wikipedia/releases/download/latest/app-alpha-universal-release.apk
+        
+      - name: Redex APK
+        run: |
+          git clone --depth 1 https://github.com/facebook/redex && cd redex
+          python3 redex.py $DIR/redex.apk --redex-binary $DIR/redexbin -c config/aggressive.config
+    
+      - uses: actions/upload-artifact@v3
+        with:
+          name: redexed apk
+          path: redex/redex-out.apk
