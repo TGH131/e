@@ -27,7 +27,7 @@ jobs:
       - name: Redex APK
         run: |
           git clone --depth 1 https://github.com/facebook/redex && cd redex
-          python3 redex.py $DIR/redex.apk --redex-binary $DIR/redexbin -c config/aggressive.config
+          python3 redex.py $DIR/redex.apk --redex-binary $DIR/redexbin -c config/default.config
     
       - uses: actions/upload-artifact@v3
         with:
